@@ -12,5 +12,15 @@ namespace Zoo
         {
             MaxHealth = 4;
         }
+
+        private Tiger() : base()
+        {
+
+        }
+
+        public Tiger(string name) : base(name)
+        {
+
+        }
     }
 }

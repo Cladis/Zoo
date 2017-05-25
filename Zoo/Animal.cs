@@ -33,9 +33,17 @@ namespace Zoo
             }
         }
         public AnimalState State { get; protected set; } = AnimalState.Full;
-        public String Name { get; set; }
+        public string Name { get; set; }
 
-        
+        public Animal()
+        {
+
+        }
+
+        public Animal(string name)
+        {
+            Name = name;
+        }
 
         public void Feed()
         {
