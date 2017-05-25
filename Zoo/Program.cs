@@ -157,12 +157,11 @@ namespace Zoo
             {
             timer.Stop();
             }
-            lock (gameLock)
-            {
-                gameOn = false;
-            }
                 Console.WriteLine(reason);
                 Console.WriteLine("*** GAME OVER ***");
+                Zoo.Clear();
+                ConsoleCommands.Commands.Clear();
+
         }
 
 
