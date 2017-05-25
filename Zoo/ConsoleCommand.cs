@@ -14,13 +14,42 @@ namespace Zoo
     class ConsoleCommand
     {
         public string Key { get; set; }
-        public HashSet<string> Flags { get; set; }
+        public List<string> Flags { get; set; }
+        public Dictionary<string, string> FlagValues { get; set; } = new Dictionary<string, string>();
         public string Description { get; set; }
-        public string Example;
+        public List<string> Example { get; set; }
+        public Action<Dictionary<string, string>> Action { get; set; }
+
+        public ConsoleCommand(string key, string[] flags, string description,
+            Action<Dictionary<string, string>> action, string[] example = null)
+        {
+            Key = key;
+            Flags = new List<string>(flags);
+            Description = description;
+            Action = action;
+            Example = new List<string>(example);
+
+        }
 
         public override string ToString()
         {
-            return base.ToString();
+            return Key + "\t" + Description;
+        }
+
+        public void Print()
+        {
+            Console.WriteLine(ToString());
+        }
+
+        public void Describe()
+        {
+            Print();
+            if (Example != null)
+            {
+                Example.ForEach(
+                    example => { Console.WriteLine(example); }
+                    );
+            }
         }
 
     }

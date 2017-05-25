@@ -9,26 +9,27 @@ namespace Zoo
     abstract class Animal
     {
         public static byte MaxHealth { get; protected set; }
+        private byte health;
         public byte Health
         {
             get
             {
-                return Health;
+                return health;
             }
             protected set
             {
                 if (value > MaxHealth)
                 {
-                    Health = MaxHealth;
+                    health = MaxHealth;
                 }
                 else if (value <= 0)
                 {
-                    Health = 0;
+                    health = 0;
                     State = AnimalState.Dead;
                 }
                 else
                 {
-                    Health = value;
+                    health = value;
                 }
             }
         }
@@ -43,6 +44,7 @@ namespace Zoo
         public Animal(string name)
         {
             Name = name;
+            Health = MaxHealth;
         }
 
         public void Feed()
@@ -50,6 +52,7 @@ namespace Zoo
             if (State == AnimalState.Hungry)
             {
                 State = AnimalState.Full;
+                Console.WriteLine("{0} was fed", this);
             }
         }
 
@@ -77,6 +80,11 @@ namespace Zoo
                     Health--;
                     break;
             }
+        }
+
+        public override string ToString()
+        {
+            return String.Format("{0} the {1}, state: {2}, health {3}", Name, GetType().Name, State, Health);
         }
     }
 
