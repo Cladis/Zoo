@@ -13,10 +13,10 @@ namespace Zoo
     /// </summary>
     class ConsoleCommand
     {
-        public String Key { get; set; }
-        public HashSet<String> Flags { get; set; }
-        public String Description { get; set; }
-        public String Example;
+        public string Key { get; set; }
+        public HashSet<string> Flags { get; set; }
+        public string Description { get; set; }
+        public string Example;
 
         public override string ToString()
         {
