@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Threading;
+using System.Windows.Input;
 
 namespace Zoo
 {
@@ -14,8 +16,31 @@ namespace Zoo
         {
             ShowWelcomeMessage();
             ShowCommands();
-            String lol = Console.ReadLine();
-            Console.WriteLine(lol);
+
+            //  DispatcherTimer setup
+            DispatcherTimer dispatcherTimer = new DispatcherTimer();
+            dispatcherTimer.Tick += new EventHandler((sender, e) =>
+            {
+                Console.WriteLine("Tick!");
+                Random rand = new Random();
+                int heads = Zoo.Count;
+                if (heads > 0)
+                {
+                    Animal animal = Zoo[rand.Next(Zoo.Count)];
+                    animal.WorsenState();
+                }
+                if (heads == 0 || (from beast in Zoo where beast.State == AnimalState.Dead select beast).Count() == heads)
+                {
+                    dispatcherTimer.Stop();
+                    Console.WriteLine("You've starved all the animals to death!");
+                    Console.WriteLine("*** GAME OVER***");
+                }
+                CommandManager.InvalidateRequerySuggested();
+            });
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 5);
+            dispatcherTimer.Start();
+            Console.WriteLine("Gotten so far");
+
             Console.ReadLine();
 
         }
@@ -26,7 +51,7 @@ namespace Zoo
             Console.WriteLine("**** Welcome to the Zoo ****");
         }
 
-        
+
         static void ShowCommands()
         {
             //TODO move into a separate class and split into some per key methods
