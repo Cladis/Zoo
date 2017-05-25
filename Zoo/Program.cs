@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace Zoo
 {
@@ -13,15 +14,24 @@ namespace Zoo
         /// </summary>
         static Dictionary<string, Animal> Zoo { get; set; } = new Dictionary<string, Animal>();
         static bool gameOn = true;
+        static Timer timer = new Timer(5000);
+        private static readonly object gameLock = new object();
+        private static readonly object timerLock = new object();
 
         static void Main(string[] args)
         {
+            timer.Elapsed += async (sender, e) => await HandleTimer(sender, e);
+            timer.Start();
             ShowWelcomeMessage();
             ConsoleCommands commands = InitialiseCommands();
             commands.PrintCommands();
-            while (gameOn)
+            bool _gameOn = gameOn;
+            while (_gameOn)
             {
-                commands.ParseCommand(Console.ReadLine());
+                    commands.ParseCommand(Console.ReadLine());
+                lock (gameLock) {
+                    _gameOn = gameOn;
+                }
             }
             Console.ReadLine();
 
@@ -81,7 +91,7 @@ namespace Zoo
                     {
                         Console.WriteLine("There's no animal called {0} in the zoo now", dict["name"]);
                     }
-                    }),
+                }),
                     new string[] { "cure --name Tigger", "cure Tigger" }
                 )
             );
@@ -94,21 +104,22 @@ namespace Zoo
                 {
                     if (Zoo.ContainsKey(dict["name"]))
                     {
-                        if (Zoo[dict["name"]].State == AnimalState.Dead)
+                        Animal beast = Zoo[dict["name"]];
+                        if (beast.State == AnimalState.Dead)
                         {
                             Zoo.Remove(dict["name"]);
-                            Console.WriteLine("{0} was buried. There are still {1} in the Zoo", Zoo[dict["name"]], Zoo.Count());
+                            Console.WriteLine("{0} was buried. There are still {1} in the Zoo", beast, Zoo.Count());
                         }
                         else
                         {
-                            Console.WriteLine("{0} is not dead, you monster!");
+                            Console.WriteLine("{0} is not dead, you monster!", beast);
                         }
                     }
                     else
                     {
                         Console.WriteLine("There's no animal called {0} in the zoo now", dict["name"]);
                     }
-                    }),
+                }),
                     new string[] { "bury --name Cecil", "bury Cecil" }
                 )
             );
@@ -132,7 +143,6 @@ namespace Zoo
                 (dict =>
                 {
                     GameOver("You gave up");
-                    gameOn = false;
                 }),
                     new string[] { "quit" }
                 )
@@ -143,8 +153,39 @@ namespace Zoo
 
         private static void GameOver(string reason = "You lost")
         {
-            Console.WriteLine(reason);
-            Console.WriteLine("*** GAME OVER ***");
+            lock (timerLock)
+            {
+            timer.Stop();
+            }
+            lock (gameLock)
+            {
+                gameOn = false;
+            }
+                Console.WriteLine(reason);
+                Console.WriteLine("*** GAME OVER ***");
+        }
+
+
+        private static Task HandleTimer(object sender, ElapsedEventArgs e)
+        {
+            return Task.Run(() =>
+            {
+                int heads = Zoo.Count;
+                if (heads > 0)
+                {
+                    Random rand = new Random();
+                    Animal animal = Enumerable.ToList<Animal>(Zoo.Values)[rand.Next((Zoo.Count))];
+                    animal.WorsenState();
+                    if (heads == 0 || (from beast in Zoo.Values where beast.State == AnimalState.Dead select beast).Count() == heads)
+                    {
+                        GameOver("You've starved all the animals to death!");
+                    }
+                    
+
+                }
+            });
+            
         }
     }
 }
+

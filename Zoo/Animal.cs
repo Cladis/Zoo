@@ -63,6 +63,7 @@ namespace Zoo
                 // QUESTION: Is it supposed to become Hungry or Full?
                 Health++;
                 State = AnimalState.Hungry;
+                Console.WriteLine("{0} was cured", this);
             }
         }
 
