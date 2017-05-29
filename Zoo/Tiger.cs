@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Zoo
+﻿namespace Zoo
 {
     class Tiger : Animal
     {
@@ -13,7 +7,7 @@ namespace Zoo
             MaxHealth = 4;
         }
 
-        private Tiger() : base()
+        private Tiger()
         {
 
         }

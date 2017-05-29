@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 
 namespace Zoo
@@ -50,12 +48,12 @@ namespace Zoo
         public void ParseCommand(string input)
         {
             input = input.Trim();
-            string key = Regex.Split(input, @"\s")[0].ToLower();
-            ConsoleCommand command = (from comm in Commands where comm.Key == key select comm).FirstOrDefault<ConsoleCommand>();
+            var key = Regex.Split(input, @"\s")[0].ToLower();
+            var command = (from comm in Commands where comm.Key == key select comm).FirstOrDefault();
             if (command != null)
             {
-                string[] keyPairs = Regex.Split(input.Substring(key.Length).Trim(), @"(\-{2}[a-z]+)");
-                int pairsCount = (from pair in keyPairs where !pair.Equals(String.Empty) select pair).Count();
+                var keyPairs = Regex.Split(input.Substring(key.Length).Trim(), @"(\-{2}[a-z]+)");
+                var pairsCount = (from pair in keyPairs where !pair.Equals(String.Empty) select pair).Count();
                 if (pairsCount == 1)
                 {
                     if (command.Flags.Count == 1)
@@ -71,10 +69,10 @@ namespace Zoo
                 }
                 else if (pairsCount == ( command.Flags.Count() * 2))
                 {
-                    for (int i = 1; i<= pairsCount; i+=2)
+                    for (var i = 1; i<= pairsCount; i+=2)
                     {
-                        string flag = keyPairs[i].ToLower().Substring("--".Length);
-                        string value = keyPairs[i + 1];
+                        var flag = keyPairs[i].ToLower().Substring("--".Length);
+                        var value = keyPairs[i + 1];
                         if ( !command.Flags.Contains(flag))
                         {
                             Console.WriteLine("Wrong input format for '{0}': check the keys format", command.Key);
@@ -82,11 +80,7 @@ namespace Zoo
                             command = null;
                             break;
                         }
-                        else
-                        {
-                            command.FlagValues.Add(flag.Trim().ToLower(), value.Trim().ToLower());
-                        }
-
+                        command.FlagValues.Add(flag.Trim().ToLower(), value.Trim().ToLower());
                     }
                 }
                 else
