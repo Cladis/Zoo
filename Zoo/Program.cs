@@ -8,6 +8,7 @@ namespace Zoo
         {
             var game = new Zoo();
             game.Start();
+            game.Outro();
             Console.ReadLine();
         }
     }

@@ -31,6 +31,7 @@ namespace Zoo
         }
         public AnimalState State { get; protected set; } = AnimalState.Full;
         public string Name { get; set; }
+        public string Species => GetType().Name;
 
 
         protected Animal(string name, byte maxHealth)
@@ -81,7 +82,7 @@ namespace Zoo
 
         public override string ToString()
         {
-            return $"{Name} the {GetType().Name}, state: {State}, health {Health}";
+            return $"{Name} the {Species}, state: {State}, health {Health}";
         }
     }
 

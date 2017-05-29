@@ -72,6 +72,7 @@
     <Compile Include="Tiger.cs" />
     <Compile Include="Wolf.cs" />
     <Compile Include="Zoo.cs" />
+    <Compile Include="ZooRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

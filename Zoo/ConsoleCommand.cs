@@ -8,7 +8,7 @@ namespace Zoo
     /// I do realise that I can just use one of the innumerable libraries for this,
     /// it just feels like an overkill for this limited scale project
     /// </summary>
-    class ConsoleCommand
+    public class ConsoleCommand
     {
         public string Key { get; set; }
         public List<string> Flags { get; set; }
@@ -17,15 +17,14 @@ namespace Zoo
         public List<string> Example { get; set; }
         public Action<Dictionary<string, string>> Action { get; set; }
 
-        public ConsoleCommand(string key, string[] flags, string description,
-            Action<Dictionary<string, string>> action, string[] example = null)
+        public ConsoleCommand(string key, IEnumerable<string> flags, string description,
+            Action<Dictionary<string, string>> action, IEnumerable<string> example = null)
         {
             Key = key;
             Flags = new List<string>(flags);
             Description = description;
             Action = action;
             Example = new List<string>(example);
-
         }
 
         public override string ToString()
@@ -41,12 +40,9 @@ namespace Zoo
         public void Describe()
         {
             Print();
-            if (Example != null)
-            {
-                Example.ForEach(
-                    example => { Console.WriteLine(example); }
-                    );
-            }
+            Example?.ForEach(
+                Console.WriteLine
+            );
         }
 
     }

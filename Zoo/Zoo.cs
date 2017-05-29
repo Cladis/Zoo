@@ -8,46 +8,39 @@ namespace Zoo
 {
     public class Zoo
     {
-        Dictionary<string, Animal> Animals { get; } = new Dictionary<string, Animal>();
-        bool gameOn = true;
+        private readonly ZooRepository _animals = new ZooRepository();
+        private bool _gameOn = true;
         private readonly Timer _timer = new Timer(5000);
-        private readonly object gameLock = new object();
-        private readonly object timerLock = new object();
-
+        private readonly object _gameLock = new object();
+        private readonly object _timerLock = new object();
 
         public void Start()
         {
             _timer.Elapsed += async (sender, e) => await HandleTimer(sender, e);
-            lock (timerLock)
+            lock (_timerLock)
             {
                 _timer.Start();
             }
-            ShowWelcomeMessage();
+            PrintWelcomeMessage();
             var commands = InitialiseCommands();
             commands.PrintCommands();
-            var _gameOn = gameOn;
-            while (_gameOn)
+            var gameOn = _gameOn;
+            while (gameOn)
             {
                 commands.ParseCommand(Console.ReadLine());
-                lock (gameLock)
+                lock (_gameLock)
                 {
-                    _gameOn = gameOn;
+                    gameOn = _gameOn;
                 }
             }
         }
 
-
-
-
-
-        void ShowWelcomeMessage()
+        private static void PrintWelcomeMessage()
         {
             Console.WriteLine("**** Welcome to the Zoo ****");
         }
 
-
-
-        ConsoleCommands InitialiseCommands()
+        private ConsoleCommands InitialiseCommands()
         {
             var commands = ConsoleCommands.Instance;
             commands.Add(
@@ -60,8 +53,8 @@ namespace Zoo
                         var beast = AnimalFactory.BuyAnimal(dict["name"], dict["species"]);
                         if (beast != null)
                         {
-                            Animals.Add(dict["name"], beast);
-                            Console.WriteLine($"With the lates acquisition there are {Animals.Count} animals in our Zoo");
+                            _animals.Add(dict["name"], beast);
+                            Console.WriteLine($"With the lates acquisition there are {_animals.Count} animals in our Zoo");
                         }
                     }),
                     new[] { "add --name Winnie the Pooh --species Bear" }
@@ -74,10 +67,10 @@ namespace Zoo
                     "Feeds an animal if it is hungry",
                     (dict =>
                     {
-                        if (Animals.ContainsKey(dict["name"])) { Animals[dict["name"]].Feed(); }
+                        if (_animals.Contains(dict["name"])) { _animals[dict["name"]].Feed(); }
                         else
                         {
-                            Console.WriteLine("There's no animal called {0} in the Zoo now", dict["name"]);
+                            Console.WriteLine($"There's no animal called {dict["name"]} in the Zoo now");
                         }
                     }),
                     new[] { "feed --name Tigger", "feed Tigger" }
@@ -90,10 +83,10 @@ namespace Zoo
                     "Cures an ill animal",
                     (dict =>
                     {
-                        if (Animals.ContainsKey(dict["name"])) { Animals[dict["name"]].Cure(); }
+                        if (_animals.Contains(dict["name"])) { _animals[dict["name"]].Cure(); }
                         else
                         {
-                            Console.WriteLine("There's no animal called {0} in the zoo now", dict["name"]);
+                            Console.WriteLine($"There's no animal called {dict["name"]} in the zoo now");
                         }
                     }),
                     new[] { "cure --name Tigger", "cure Tigger" }
@@ -106,13 +99,13 @@ namespace Zoo
                     "Removes the animal from the zoo",
                     (dict =>
                     {
-                        if (Animals.ContainsKey(dict["name"]))
+                        if (_animals.Contains(dict["name"]))
                         {
-                            var beast = Animals[dict["name"]];
+                            var beast = _animals[dict["name"]];
                             if (beast.State == AnimalState.Dead)
                             {
-                                Animals.Remove(dict["name"]);
-                                Console.WriteLine($"{beast} was buried. There are still {Animals.Count} in the Zoo");
+                                _animals.Delete(dict["name"]);
+                                Console.WriteLine($"{beast} was buried. There are still {_animals.Count} in the Zoo");
                             }
                             else
                             {
@@ -151,46 +144,65 @@ namespace Zoo
                     new[] { "quit" }
                 )
             );
+            commands.Add(
+                new ConsoleCommand(
+                    "restart",
+                    new string[] { },
+                    "Restart the game. Means you are giving up",
+                    (dict =>
+                    {
+                        GameOver("You gave up", true);
+                    }),
+                    new[] { "quit" }
+                )
+            );
 
             return commands;
         }
 
-
-
-        private void GameOver(string reason = "You lost")
+        private void GameOver(string reason = "You lost", bool restart = false)
         {
-            lock (timerLock)
-            {
-                _timer.Stop();
-            }
+            _animals.Clear();
+
             Console.WriteLine(reason);
             Console.WriteLine("*** GAME OVER ***");
-            Animals.Clear();
-            ConsoleCommands.Commands.Clear();
-
+            if (restart) return;
+            lock (_timerLock)
+            {
+                _timer.Stop();
+                _timer.Dispose();
+            }
+            lock (_gameLock)
+            {
+                _gameOn = false;
+            }
         }
-
 
         private Task HandleTimer(object sender, ElapsedEventArgs e)
         {
             return Task.Run(() =>
             {
-                var heads = Animals.Count;
-                if (heads > 0)
+                var heads = _animals.Count;
+                if (heads == 0) return;
+
+                var rand = new Random();
+                var aliveAnimals = _animals.GetAliveAnimals();
+                if (aliveAnimals.Count > 0)
                 {
-                    var rand = new Random();
-                    var animal = Animals.Values.ToList()[rand.Next((Animals.Count))];
+                    var animal = aliveAnimals[rand.Next(aliveAnimals.Count)];
                     animal.WorsenState();
-                    if (heads == 0 || (from beast in Animals.Values where beast.State == AnimalState.Dead select beast).Count() == heads)
-                    {
-                        GameOver("You've starved all the animals to death!");
-                    }
-
-
+                }
+                if (_animals.GetDeadAnimals().Count == heads)
+                {
+                    GameOver("You've starved all the animals to death!");
                 }
             });
+        }
 
+
+        public void Outro()
+        {
+            Console.WriteLine("*** Thank you for playing the Zoo ***");
         }
     } // end of class
-
-}
+}// end of namespace
