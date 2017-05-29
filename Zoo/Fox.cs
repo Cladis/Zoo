@@ -1,18 +1,8 @@
 ﻿namespace Zoo
 {
-    class Fox : Animal
+    public class Fox : Animal
     {
-        static Fox()
-        {
-            MaxHealth = 3;
-        }
-
-        private Fox()
-        {
-
-        }
-
-        public Fox(string name) : base(name)
+       public Fox(string name) : base(name, 3)
         {
 
         }

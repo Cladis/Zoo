@@ -2,9 +2,9 @@
 
 namespace Zoo
 {
-    static class AnimalFactory
+    internal static class AnimalFactory
     {
-        public static Animal BuyAnimal(String name, String species)
+        public static Animal BuyAnimal(string name, string species)
         {
             Animal animal = null;
             switch (species)
@@ -28,11 +28,11 @@ namespace Zoo
                     animal = new Wolf(name);
                     break;
                 default:
-                    Console.WriteLine("The species of {0} is unknown to our biologists", species);
+                    Console.WriteLine($"The species of {species} is unknown to our biologists");
                     break;
             }
             if (animal != null) {
-                Console.WriteLine("You've just bought {0}", animal);
+                Console.WriteLine($"You've just bought {animal}");
             }
             return animal;
         }

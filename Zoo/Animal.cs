@@ -2,45 +2,42 @@
 
 namespace Zoo
 {
-    abstract class Animal
+    public abstract class Animal
     {
-        public static byte MaxHealth { get; protected set; }
-        private byte health;
+        public byte MaxHealth { get; protected set; }
+        private byte _health;
         public byte Health
         {
             get
             {
-                return health;
+                return _health;
             }
             protected set
             {
                 if (value > MaxHealth)
                 {
-                    health = MaxHealth;
+                    _health = MaxHealth;
                 }
                 else if (value <= 0)
                 {
-                    health = 0;
+                    _health = 0;
                     State = AnimalState.Dead;
                 }
                 else
                 {
-                    health = value;
+                    _health = value;
                 }
             }
         }
         public AnimalState State { get; protected set; } = AnimalState.Full;
         public string Name { get; set; }
 
-        public Animal()
-        {
 
-        }
-
-        public Animal(string name)
+        protected Animal(string name, byte maxHealth)
         {
             Name = name;
-            Health = MaxHealth;
+            MaxHealth = maxHealth;
+            Health = maxHealth;
         }
 
         public void Feed()
@@ -48,7 +45,7 @@ namespace Zoo
             if (State == AnimalState.Hungry)
             {
                 State = AnimalState.Full;
-                Console.WriteLine("{0} was fed", this);
+                Console.WriteLine($"{this} was fed");
             }
         }
 
@@ -58,8 +55,11 @@ namespace Zoo
             {
                 // QUESTION: Is it supposed to become Hungry or Full?
                 Health++;
-                State = AnimalState.Hungry;
-                Console.WriteLine("{0} was cured", this);
+                if (Health == MaxHealth)
+                {
+                    State = AnimalState.Hungry;
+                }
+                Console.WriteLine($"{this} was cured");
             }
         }
 
@@ -81,7 +81,7 @@ namespace Zoo
 
         public override string ToString()
         {
-            return String.Format("{0} the {1}, state: {2}, health {3}", Name, GetType().Name, State, Health);
+            return $"{Name} the {GetType().Name}, state: {State}, health {Health}";
         }
     }
 
