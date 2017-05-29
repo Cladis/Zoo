@@ -198,7 +198,7 @@ namespace Zoo
                     {
                         _animals.PrintListOfAnimals(_animals.GetAnimalsByState(dict["state"]));
                     }),
-                    new[] { "select-state --state Hungry" }
+                    new[] { "select-state --state Hungry", "select-state Hungry" }
                     )
             );
             commands.Add(
@@ -227,7 +227,7 @@ namespace Zoo
                         }
                         Console.WriteLine(_animals[dict["name"]]);
                     }),
-                    new[] { "select-name --name Cecil" }
+                    new[] { "select-name --name Cecil", "select-name Cecil" }
                 )
             );
             commands.Add(
@@ -253,6 +253,38 @@ namespace Zoo
                             );
                     }),
                     new[] { "select-sh --species Wolf|Bear --threshold 3" }
+                )
+            );
+            commands.Add(
+                new ConsoleCommand(
+                    "average-health",
+                    new string[] { },
+                    "Selects the animal specified",
+                    (dict =>
+                    {
+                        Console.WriteLine($"The average health of all the animals is {_animals.GetAverageHealth():0.####}");
+                    }),
+                    new[] { "average-health" }
+                )
+            );
+            commands.Add(
+                new ConsoleCommand(
+                    "run-examples",
+                    new string[] { },
+                    "Shows and runs example queries",
+                    (dict =>
+                    {
+                        commands.DemonstrateCommands("select-all");
+                        commands.DemonstrateCommands("select-ss --species Tiger --state Ill");
+                        commands.DemonstrateCommands("select-name Hathi");
+                        commands.DemonstrateCommands("select-state Hungry");
+                        //TODO add command mapped to GetMostHealthy example here
+                        //TODO add command showing number of the dead here
+                        commands.DemonstrateCommands("select-sh --species Wolf|Bear --threshold 3");
+                        //TODO add command mapped to MinMaxHealth example here
+                        commands.DemonstrateCommands("average-health");
+                    }),
+                    new[] { "run-examples" }
                 )
             );
 
