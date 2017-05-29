@@ -111,14 +111,16 @@ StringComparison.CurrentCultureIgnoreCase)
         /// <returns></returns>
         public List<Animal> GetMostHealthy()
         {
-            return null;
+            return (from beast in Animals.Values
+                group beast by beast.Species
+                into g
+                select g.OrderByDescending(s => s.Health).First()).ToList();
         }
 
         public Dictionary<string, int> CountMostHealthy()
         {
-            return null;
-            //(from beast in Animals.Values group beast by beast.Species into g 
-            // select new {Species = g.First().Species ,Count = g.Count()}).ToDictionary<string, int>();
+            return  (from beast in Animals.Values group beast by beast.Species into g 
+             select new {Species = g.First().Species, Count = g.Count()}).ToDictionary(s => s.Species, s => s.Count);
         }
 
         /// <summary>
