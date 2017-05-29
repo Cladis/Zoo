@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 
 namespace Zoo
@@ -139,12 +140,22 @@ StringComparison.CurrentCultureIgnoreCase)
 
         public List<Animal> MinMaxHealth()
         {
+             var resultVar = (from beast in Animals.Values
+                group beast by 1
+                into g
+                select new
+                {
+                    Max = (from b in g where b.Health == g.Max(i => i.Health) select b).Take(1),
+                    Min = (from b in g where b.Health == g.Min(i => i.Health) select b).Take(1)
+                }).First();
             return null;
+            // TODO figure out how to return it
+
         }
 
-        public float GetAverageHealth()
+        public double GetAverageHealth()
         {
-            return -100500;
+            return GetAllAnimals().Average(i => (double) i.Health);
         }
 
 
