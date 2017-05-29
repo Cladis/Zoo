@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
 
@@ -51,10 +49,17 @@ namespace Zoo
                     (dict =>
                     {
                         var beast = AnimalFactory.BuyAnimal(dict["name"], dict["species"]);
-                        if (beast != null)
+                        if (beast == null) return;
+                        if (!_animals.Contains(dict["name"]))
                         {
                             _animals.Add(dict["name"], beast);
-                            Console.WriteLine($"With the lates acquisition there are {_animals.Count} animals in our Zoo");
+                            Console.WriteLine(
+                                $"With the lates acquisition there are {_animals.Count} animals in our Zoo");
+                        }
+                        else
+                        {
+                            Console.WriteLine(
+                                $"Your fantasy sucks. There's already an animal called {dict["name"]} in the Zoo!");
                         }
                     }),
                     new[] { "add --name Winnie the Pooh --species Bear" }
@@ -153,9 +158,104 @@ namespace Zoo
                     {
                         GameOver("You gave up", true);
                     }),
-                    new[] { "quit" }
+                    new[] { "restart" }
                 )
             );
+            commands.Add(
+                new ConsoleCommand(
+                    "populate",
+                    new string[] { },
+                    "A test-only command populating the Zoo with 5 pre-set animals",
+                    (dict =>
+                    {
+                        commands.ParseCommand("add --name Baloo --species Bear");
+                        commands.ParseCommand("add --name Hathi --species Elephant");
+                        commands.ParseCommand("add --name Shere Khan --species Tiger");
+                        commands.ParseCommand("add --name Cecil --species Lion");
+                        commands.ParseCommand("add --name Akela --species Wolf");
+                    }),
+                    new[] { "populate" }
+                )
+            );
+            commands.Add(
+                new ConsoleCommand(
+                    "select-all",
+                    new string[] { },
+                    "Selects all the animals in the Zoo now",
+                    (dict =>
+                    {
+                        _animals.PrintListOfAnimals(_animals.GetAllAnimals());
+                    }),
+                    new[] { "selectall" }
+                )
+            );
+            commands.Add(
+                new ConsoleCommand(
+                    "select-state",
+                    new[] { "state"},
+                    "Selects all the animals in the Zoo with the state given",
+                    (dict =>
+                    {
+                        _animals.PrintListOfAnimals(_animals.GetAnimalsByState(dict["state"]));
+                    }),
+                    new[] { "select-state --state Hungry" }
+                    )
+            );
+            commands.Add(
+                new ConsoleCommand(
+                    "select-ss",
+                    new[] { "state", "species"},
+                    "Selects all the animals in the Zoo with the state given of the species given",
+                    (dict =>
+                    {
+                        _animals.PrintListOfAnimals(_animals.GetAnimalsByStateBySpecies(dict["state"], dict["species"]));
+                    }),
+                    new[] { "select-ss --state Hungry --species Lion" }
+                )
+            );
+            commands.Add(
+                new ConsoleCommand(
+                    "select-name",
+                    new[] { "name" },
+                    "Selects the animal specified",
+                    (dict =>
+                    {
+                        if (!_animals.Contains(dict["name"]))
+                        {
+                            Console.WriteLine($"There's no animal called {dict["name"]} in the Zoo");
+                            return;
+                        }
+                        Console.WriteLine(_animals[dict["name"]]);
+                    }),
+                    new[] { "select-name --name Cecil" }
+                )
+            );
+            commands.Add(
+                new ConsoleCommand(
+                    "select-sh",
+                    new[] { "species", "threshold" },
+                    "Selects the animal specified",
+                    (dict =>
+                    {
+                        byte threshold;
+                        try
+                        {
+                            threshold = byte.Parse(dict["threshold"]);
+                        }
+                        catch
+                        {
+                            Console.WriteLine("Could not parse your threshold. A digit. You know what it is, right?");
+                            return;
+                        }
+                        _animals.PrintListOfAnimals(
+                            _animals.GetHealthierThan(dict["species"].ToLower().Split('|'),
+                            threshold)
+                            );
+                    }),
+                    new[] { "select-sh --species Wolf|Bear --threshold 3" }
+                )
+            );
+
 
             return commands;
         }

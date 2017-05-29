@@ -8,11 +8,11 @@ namespace Zoo
     /// <summary>
     /// Encapsulates list of console commands supported by the application
     /// </summary>
-    class ConsoleCommands
+    public class ConsoleCommands
     {
-        static public ConsoleCommands Instance { get; }
+        public static ConsoleCommands Instance { get; }
 
-        static public List<ConsoleCommand> Commands { get; set; }
+        public static List<ConsoleCommand> Commands { get; set; }
 
         private ConsoleCommands()
         {
@@ -62,7 +62,7 @@ namespace Zoo
                     }
                     else
                     {
-                        Console.WriteLine("Wrong input format for '{0}': it has more than one key, could not disambiguate", command.Key);
+                        Console.WriteLine($"Wrong input format for '{command.Key}': it has more than one key, could not disambiguate");
                         command.Describe();
                         command = null;
                     }
@@ -75,7 +75,7 @@ namespace Zoo
                         var value = keyPairs[i + 1];
                         if ( !command.Flags.Contains(flag))
                         {
-                            Console.WriteLine("Wrong input format for '{0}': check the keys format", command.Key);
+                            Console.WriteLine($"Wrong input format for '{command.Key}': check the keys format");
                             command.Describe();
                             command = null;
                             break;
@@ -85,7 +85,7 @@ namespace Zoo
                 }
                 else
                 {
-                    Console.WriteLine("Wrong input format for '{0}': all the flags are compulsory, extra keys are not allowed", command.Key);
+                    Console.WriteLine($"Wrong input format for '{command.Key}': all the flags are compulsory, extra keys are not allowed");
                     command.Describe();
                     command = null;
                 }
@@ -96,11 +96,15 @@ namespace Zoo
                 PrintCommands();
                 command = null;
             }
-            if (command != null)
-            {
-                command.Action(command.FlagValues);
-                command.FlagValues.Clear();
-            }
+            if (command == null) return;
+            command.Action(command.FlagValues);
+            command.FlagValues.Clear();
+        }
+
+        public void DemonstrateCommands(string command)
+        {
+            Console.WriteLine(command);
+            ParseCommand(command);
         }
     }
 }
