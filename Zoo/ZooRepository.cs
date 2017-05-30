@@ -75,22 +75,25 @@ namespace Zoo
         public List<Animal> GetAnimalsBySpecies(string species)
         {
             return (from beast in Animals.Values
-                    where string.Equals(beast.Species.ToLower(), species,
-StringComparison.CurrentCultureIgnoreCase)
+                    where string.Equals(beast.Species.ToLower(), species, StringComparison.CurrentCultureIgnoreCase)
                     select beast).ToList();
         }
 
         /// <summary>
-        /// TODO add state validation
+        /// 
         /// </summary>
         /// <param name="state"></param>
         /// <returns></returns>
         public List<Animal> GetAnimalsByState(string state)
         {
+            if (!Enum.TryParse(state, true, out AnimalState parsedState))
+            {
+                Console.WriteLine($"You've supplied a wrong animal state of {state}");
+            }
             return (
                 from beast
                 in Animals.Values
-                where string.Equals(beast.State.ToString(), state, StringComparison.CurrentCultureIgnoreCase)
+                where beast.State == parsedState
                 select beast).ToList();
         }
 
@@ -101,11 +104,15 @@ StringComparison.CurrentCultureIgnoreCase)
 
         public List<Animal> GetAnimalsByStateBySpecies(string species, string state)
         {
+            if (!Enum.TryParse(state, true, out AnimalState parsedState))
+            {
+                Console.WriteLine($"You've supplied a wrong animal state of {state}");
+            }
             return (
                 from beast
                 in Animals.Values
                 where string.Equals(beast.Species, species, StringComparison.CurrentCultureIgnoreCase) &&
-                      string.Equals(beast.State.ToString(), state, StringComparison.CurrentCultureIgnoreCase)
+                      beast.State == parsedState
                 select beast
                 ).ToList();
         }
@@ -150,7 +157,7 @@ StringComparison.CurrentCultureIgnoreCase)
 
         public List<Animal> MinMaxHealth()
         {
-            return  (from beast in Animals.Values
+            return (from beast in Animals.Values
                     group beast by 1
                     into g
                     select new List<Animal>()

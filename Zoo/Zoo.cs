@@ -192,7 +192,7 @@ namespace Zoo
             commands.Add(
                 new ConsoleCommand(
                     "select-state",
-                    new[] { "state"},
+                    new[] { "state" },
                     "Selects all the animals in the Zoo with the state given",
                     (dict =>
                     {
@@ -216,11 +216,11 @@ namespace Zoo
             commands.Add(
                 new ConsoleCommand(
                     "select-ss",
-                    new[] { "state", "species"},
+                    new[] { "state", "species" },
                     "Selects all the animals in the Zoo with the state given of the species given",
                     (dict =>
                     {
-                        _animals.PrintListOfAnimals(_animals.GetAnimalsByStateBySpecies(dict["state"], dict["species"]));
+                        _animals.PrintListOfAnimals(_animals.GetAnimalsByStateBySpecies(dict["species"], dict["state"]));
                     }),
                     new[] { "select-ss --state Hungry --species Lion" }
                 )
