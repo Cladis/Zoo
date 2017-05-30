@@ -281,6 +281,18 @@ namespace Zoo
             );
             commands.Add(
                 new ConsoleCommand(
+                    "select-minmax",
+                    new string[] { },
+                    "Prints the animal with the minimum health followed by the animal with the maximum health",
+                    (dict =>
+                    {
+                        _animals.PrintListOfAnimals(_animals.MinMaxHealth());
+                    }),
+                    new[] { "select-minmax" }
+                )
+            );
+            commands.Add(
+                new ConsoleCommand(
                     "run-examples",
                     new string[] { },
                     "Shows and runs example queries",
@@ -293,7 +305,7 @@ namespace Zoo
                         //TODO add command mapped to GetMostHealthy example here
                         commands.DemonstrateCommands("select-sc Dead");
                         commands.DemonstrateCommands("select-sh --species Wolf|Bear --threshold 3");
-                        //TODO add command mapped to MinMaxHealth example here
+                        commands.DemonstrateCommands("select-minmax");
                         commands.DemonstrateCommands("average-health");
                     }),
                     new[] { "run-examples" }
