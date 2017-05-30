@@ -88,10 +88,15 @@ StringComparison.CurrentCultureIgnoreCase)
         public List<Animal> GetAnimalsByState(string state)
         {
             return (
-                from beast 
+                from beast
                 in Animals.Values
                 where string.Equals(beast.State.ToString(), state, StringComparison.CurrentCultureIgnoreCase)
                 select beast).ToList();
+        }
+
+        public int CountAnimalsByState(string state)
+        {
+            return GetAnimalsByState(state).Count();
         }
 
         public List<Animal> GetAnimalsByStateBySpecies(string species, string state)
@@ -112,15 +117,16 @@ StringComparison.CurrentCultureIgnoreCase)
         public List<Animal> GetMostHealthy()
         {
             return (from beast in Animals.Values
-                group beast by beast.Species
+                    group beast by beast.Species
                 into g
-                select g.OrderByDescending(s => s.Health).First()).ToList();
+                    select g.OrderByDescending(s => s.Health).First()).ToList();
         }
 
         public Dictionary<string, int> CountMostHealthy()
         {
-            return  (from beast in Animals.Values group beast by beast.Species into g 
-             select new {Species = g.First().Species, Count = g.Count()}).ToDictionary(s => s.Species, s => s.Count);
+            return (from beast in Animals.Values
+                    group beast by beast.Species into g
+                    select new { Species = g.First().Species, Count = g.Count() }).ToDictionary(s => s.Species, s => s.Count);
         }
 
         /// <summary>
@@ -142,14 +148,14 @@ StringComparison.CurrentCultureIgnoreCase)
 
         public List<Animal> MinMaxHealth()
         {
-             var resultVar = (from beast in Animals.Values
-                group beast by 1
-                into g
-                select new
-                {
-                    Max = (from b in g where b.Health == g.Max(i => i.Health) select b).Take(1),
-                    Min = (from b in g where b.Health == g.Min(i => i.Health) select b).Take(1)
-                }).First();
+            var resultVar = (from beast in Animals.Values
+                             group beast by 1
+               into g
+                             select new
+                             {
+                                 Max = (from b in g where b.Health == g.Max(i => i.Health) select b).Take(1),
+                                 Min = (from b in g where b.Health == g.Min(i => i.Health) select b).Take(1)
+                             }).First();
             return null;
             // TODO figure out how to return it
 
@@ -157,7 +163,7 @@ StringComparison.CurrentCultureIgnoreCase)
 
         public double GetAverageHealth()
         {
-            return GetAllAnimals().Average(i => (double) i.Health);
+            return GetAllAnimals().Average(i => (double)i.Health);
         }
 
 
