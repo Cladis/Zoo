@@ -129,6 +129,8 @@ StringComparison.CurrentCultureIgnoreCase)
                     select new { Species = g.First().Species, Count = g.Count() }).ToDictionary(s => s.Species, s => s.Count);
         }
 
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -140,7 +142,7 @@ StringComparison.CurrentCultureIgnoreCase)
             return (
                 from beast
                 in Animals.Values
-                where species.Contains(beast.Species)
+                where species.Contains(beast.Species.ToLower())
                 && beast.Health > threshold
                 select beast
             ).ToList();

@@ -293,6 +293,18 @@ namespace Zoo
             );
             commands.Add(
                 new ConsoleCommand(
+                    "select-healthiest",
+                    new string[] { },
+                    "Prints the healthiest animals of each species",
+                    (dict =>
+                    {
+                        _animals.PrintListOfAnimals(_animals.GetMostHealthy());
+                    }),
+                    new[] { "select-healthiest" }
+                )
+            );
+            commands.Add(
+                new ConsoleCommand(
                     "run-examples",
                     new string[] { },
                     "Shows and runs example queries",
@@ -302,7 +314,7 @@ namespace Zoo
                         commands.DemonstrateCommands("select-ss --species Tiger --state Ill");
                         commands.DemonstrateCommands("select-name Hathi");
                         commands.DemonstrateCommands("select-state Hungry");
-                        //TODO add command mapped to GetMostHealthy example here
+                        commands.DemonstrateCommands("select-healthiest");
                         commands.DemonstrateCommands("select-sc Dead");
                         commands.DemonstrateCommands("select-sh --species Wolf|Bear --threshold 3");
                         commands.DemonstrateCommands("select-minmax");
